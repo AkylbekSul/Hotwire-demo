@@ -1,12 +1,28 @@
-<div id="<%= dom_id article %>">
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Title:</strong>
-    <%= article.title %>
-  </p>
+<%= turbo_frame_tag article do %>
+  <div  class="flex flex-row">
+    <div class="basis-1/4">
+      <p class="my-5">
+        <strong class="block font-medium mb-1">Title:</strong>
+        <%= article.title %>
+      </p>
 
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Body:</strong>
-    <%= article.body %>
-  </p>
+      <p class="my-5">
+        <strong class="block font-medium mb-1">Body:</strong>
+        <%= article.body %>
+      </p>
+    </div>
+    <div class="basis-3/4 flex flex-row">
+      <div>
+        <%= link_to "Edit this article", edit_article_path(article), class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+      </div>
+      <div class="inline-block ml-2">
+        <%= button_to "Destroy this article", article, method: :delete, class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 font-medium" %>
+      </div>
+      <div>
+        <%= link_to "Show this article", article, class: "ml-2 rounded-lg py-3 mt-2 px-5 bg-gray-100 inline-block font-medium", data: {turbo_frame: "_top"} %>
+      </div>
+      
+    </div>
 
-</div>
+  </div>
+<% end %>

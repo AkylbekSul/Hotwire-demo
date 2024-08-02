@@ -3,16 +3,19 @@ class ArticlesController < ApplicationController
 
   # GET /articles or /articles.json
   def index
-    @articles = Article.all
+    @articles = Article.ordered
+    @articles.each do |article|
+      article.title.upcase!
+    end
   end
 
   # GET /articles/1 or /articles/1.json
   def show
     @article = Article.find(params[:id])
-    # @local_var = "Local Variable"
-    # $global_var = "Global Variable"
-    # @instance_var = "Instance Variable"
-    # @@class_var = "Class Variable"
+    @local_var = "Local Variable"
+    $global_var = "Global Variable"
+    @instance_var = "Instance Variable"
+    @@class_var = "Class Variable"
   end
 
   # GET /articles/new
@@ -31,6 +34,12 @@ class ArticlesController < ApplicationController
     respond_to do |format|
       if @article.save
         format.html { redirect_to article_url(@article), notice: "Article was successfully created." }
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.prepend("articles", partial: "articles/article", locals: { article: @article }),
+            turbo_stream.update(Article.new, "")
+          ]
+        end
         format.json { render :show, status: :created, location: @article }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -43,7 +52,7 @@ class ArticlesController < ApplicationController
   def update
     respond_to do |format|
       if @article.update(article_params)
-        format.html { redirect_to article_url(@article), notice: "Article was successfully updated." }
+        format.html { redirect_to root_path, notice: "Article was successfully updated." }
         format.json { render :show, status: :ok, location: @article }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -58,6 +67,9 @@ class ArticlesController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to articles_url, notice: "Article was successfully destroyed." }
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.remove(@article)
+      end
       format.json { head :no_content }
     end
   end
